@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "discord-server-leaver"
+version = "1.0.0"
+description = "Bulk leave Discord servers safely from the command line"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "zodi4ctvn", url = "https://github.com/zodi4ctvn" }
+]
+keywords = ["discord", "automation", "cli", "tool"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Utilities",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "httpx[http2]>=0.27.0",
+    "rich>=13.7.0",
+    "questionary>=2.0.1",
+    "prompt_toolkit>=3.0.36",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+dsl = "leaver.main:main"
+
+[project.urls]
+Homepage = "https://github.com/zodi4ctvn/discord-server-leaver"
+Repository = "https://github.com/zodi4ctvn/discord-server-leaver"
+Issues = "https://github.com/zodi4ctvn/discord-server-leaver/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/leaver"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
