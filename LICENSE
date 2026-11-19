@@ -1,21 +1,38 @@
-MIT License
+Custom Non-Commercial Attribution License
 
-Copyright (c) 2026 zodi4ctvn
+Copyright (c) 2026 Zodi4c (https://github.com/zodi4ctvn)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to use, copy,
+and modify the Software strictly for personal, educational, and non-commercial
+purposes, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Mandatory Attribution
+   The above copyright notice, this permission notice, the author attribution
+   ("Zodi4c" / "zodi4ctvn" and "https://github.com/zodi4ctvn"), and the original
+   project name ("Discord Server Leaver") must be preserved in all copies,
+   redistributions, or substantial portions of the Software. Removing, obscuring,
+   or replacing author attribution, banners, or integrity checks to rebrand the
+   Software as your own is strictly prohibited.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. Non-Commercial Use Only
+   You may not sell, rent, lease, sublicense, monetize, or distribute the
+   Software (or derivative works based on it) for commercial purposes, whether
+   standalone or bundled as part of a paid product or service, without prior
+   written permission from the copyright holder.
+
+3. Discord Terms of Service Disclaimer
+   This Software interacts with Discord's API using a user account token.
+   Automating a user account may violate Discord's Terms of Service (ToS) and
+   may result in account flags, verification locks, temporary restrictions, or
+   permanent termination. You are solely responsible for how you use this
+   Software and for complying with all applicable terms and laws.
+
+4. No Warranty & Limitation of Liability
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, ACCOUNT
+   RESTRICTIONS, DATA LOSS, OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+   CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

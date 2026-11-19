@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import os
 
 from rich.console import Console
@@ -39,12 +38,12 @@ def secure_uniform(low: float, high: float) -> float:
 
 
 def human_delay() -> float:
-    """Return a random inter-request delay in seconds (``uniform(1.2, 3.8)``)."""
+    """Return a random inter-request delay in seconds (``0.8–2.0s``)."""
     return secure_uniform(DELAY_MIN, DELAY_MAX)
 
 
 def rest_delay() -> float:
-    """Return a random longer rest in seconds (``uniform(8, 15)``), used every 10 leaves."""
+    """Return a random longer rest in seconds (``4.0–7.0s``), used every 10 leaves."""
     return secure_uniform(REST_MIN, REST_MAX)
 
 
@@ -52,7 +51,7 @@ def next_delay(completed: int, total: int) -> float:
     """Return the human-like delay that should follow the ``completed``-th leave request.
 
     No delay is applied after the final request. After every ``REST_EVERY`` requests an
-    additional rest period (``uniform(8, 15)``) is added.
+    additional rest period (``4.0–7.0s``) is added.
 
     Args:
         completed: Number of leave requests already performed (1-based).
@@ -63,14 +62,6 @@ def next_delay(completed: int, total: int) -> float:
     delay = human_delay()
     if completed % REST_EVERY == 0:
         delay += rest_delay()
-    return delay
-
-
-async def adaptive_sleep(completed: int, total: int) -> float:
-    """Sleep for :func:`next_delay` seconds and return the duration slept."""
-    delay = next_delay(completed, total)
-    if delay > 0:
-        await asyncio.sleep(delay)
     return delay
 
 
@@ -114,11 +105,6 @@ def backoff_429(retry_after: float, attempt: int) -> float:
 def log_info(message: str) -> None:
     """Log an informational message to the console."""
     console.print(f"[cyan]•[/cyan] {message}")
-
-
-def log_success(message: str) -> None:
-    """Log a success message to the console."""
-    console.print(f"[green]+[/green] {message}")
 
 
 def log_warning(message: str) -> None:

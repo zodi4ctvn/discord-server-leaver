@@ -3,17 +3,14 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import sys
 import time
 
-from dotenv import load_dotenv
-
-from . import __author__, ui
+from . import ui
 from .api import APIError, DiscordClient, Guild, LeaveResult, User
 from .i18n import detect_default_language, set_language, t
+from .integrity import verify_integrity
 from .security import (
-    TOKEN_ENV_VAR,
     SignatureError,
     TokenError,
     TokenRevokedError,
@@ -22,7 +19,6 @@ from .security import (
     clear_clipboard,
     clipboard_has_token,
     generate_fingerprint,
-    verify_signature,
 )
 from .utils import GoBack, console, log_error, log_info, log_warning, next_delay
 
@@ -95,18 +91,11 @@ def _run(session: TokenSession, clients: list[str]) -> int:
 
 def main() -> None:
     """CLI entry point (``dsl``)."""
-    # DSL_TOKEN is only honoured if the user exported it in the real environment —
-    # it is captured *before* any optional .env file is loaded, so a token is never
-    # picked up from a file on disk.
-    env_token_present = TOKEN_ENV_VAR in os.environ
-    load_dotenv(override=False)
-    if not env_token_present:
-        os.environ.pop(TOKEN_ENV_VAR, None)
+    verify_integrity()
 
     session: TokenSession | None = None
     exit_code = 0
     try:
-        verify_signature(__author__, ui._BANNER_LINES)
         set_language(detect_default_language())
         detected = ui.detect_clients()
         clients: list[str] = []

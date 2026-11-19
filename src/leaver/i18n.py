@@ -69,13 +69,9 @@ STRINGS: dict[str, dict[str, str]] = {
         "confirm_client": "• Client:         [bold cyan]{clients}[/bold cyan]",
         "confirm_eta": "• Estimated time: [bold yellow]{eta}[/bold yellow]",
         "confirm_servers": "» Selected servers:",
-        "confirm_prompt": (
-            "[bold]» Type [bold bright_red]CONFIRM[/bold bright_red] to proceed, "
-            "or press [dim]Enter[/dim] to go back[/bold]"
-        ),
+        "confirm_prompt": "Type CONFIRM to proceed (Backspace/Esc = back):",
+        "confirm_keyword": "CONFIRM",
         "est_seconds": "~{n} seconds",
-        "cancelled": "× Cancelled. No servers were left.",
-        "going_back": "« Going back...",
         # execution
         "exec_title": "Leaving Servers",
         "status_left": "+ Left",
@@ -84,10 +80,6 @@ STRINGS: dict[str, dict[str, str]] = {
         "status_leaving": "» Leaving...",
         "status_waiting": "… Human delay {s}s",
         "eta": "ETA",
-        "col_server": "Server",
-        "col_status": "Status",
-        "col_detail": "Detail",
-        "hidden_rows": "… {n} earlier result(s) hidden",
         # api details / errors
         "detail_left": "Left",
         "detail_owner": "Owner",
@@ -171,13 +163,9 @@ STRINGS: dict[str, dict[str, str]] = {
         "confirm_client": "• Uygulama:       [bold cyan]{clients}[/bold cyan]",
         "confirm_eta": "• Tahmini süre:   [bold yellow]{eta}[/bold yellow]",
         "confirm_servers": "» Seçilen sunucular:",
-        "confirm_prompt": (
-            "[bold]» Devam etmek için [bold bright_red]CONFIRM[/bold bright_red] yaz, "
-            "geri dönmek için [dim]Enter[/dim]'a bas[/bold]"
-        ),
+        "confirm_prompt": "Devam etmek için ONAYLA yazın (Backspace/Esc = geri):",
+        "confirm_keyword": "ONAYLA",
         "est_seconds": "~{n} saniye",
-        "cancelled": "× İptal edildi. Hiçbir sunucudan ayrılınmadı.",
-        "going_back": "« Geri dönülüyor...",
         "exec_title": "Sunuculardan Ayrılıyor",
         "status_left": "+ Ayrıldı",
         "status_skipped": "! Atlandı",
@@ -185,10 +173,6 @@ STRINGS: dict[str, dict[str, str]] = {
         "status_leaving": "» Ayrılıyor...",
         "status_waiting": "… Güvenli bekleme {s}sn",
         "eta": "Kalan",
-        "col_server": "Sunucu",
-        "col_status": "Durum",
-        "col_detail": "Detay",
-        "hidden_rows": "… önceki {n} sonuç gizlendi",
         "detail_left": "Ayrıldı",
         "detail_owner": "Sahibi",
         "detail_forbidden": "{name} sunucusundan ayrılınamıyor (yasak)",
@@ -223,11 +207,6 @@ def set_language(code: str) -> None:
     """Set the active UI language (``"tr"`` or ``"en"``)."""
     global _current
     _current = code if code in SUPPORTED else "en"
-
-
-def get_language() -> str:
-    """Return the active UI language code."""
-    return _current
 
 
 def detect_default_language() -> str:

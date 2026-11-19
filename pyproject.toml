@@ -16,11 +16,12 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: MIT License",
+    "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Utilities",
 ]
 requires-python = ">=3.11"
@@ -29,7 +30,6 @@ dependencies = [
     "rich>=13.7.0",
     "questionary>=2.0.1",
     "prompt_toolkit>=3.0.36",
-    "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -54,7 +54,7 @@ packages = ["src/leaver"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-src = ["src"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
@@ -68,4 +68,5 @@ warn_unused_configs = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]

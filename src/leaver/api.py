@@ -224,9 +224,6 @@ class DiscordClient:
                 await asyncio.sleep(SERVER_ERROR_DELAY)
                 continue
 
-            # Layer 1 — honour the bucket headers on every response.
-            await self._limiter.observe(response)
-
             status = response.status_code
             if status == 401:
                 raise TokenRevokedError(t("err_401"))
@@ -245,6 +242,8 @@ class DiscordClient:
                 await asyncio.sleep(SERVER_ERROR_DELAY)
                 continue
 
+            # Layer 1 — honour the bucket headers on non-retry responses.
+            await self._limiter.observe(response)
             return response
 
     # ------------------------------------------------------------------ endpoints
@@ -300,8 +299,8 @@ class DiscordClient:
     async def leave_guild(self, guild: Guild) -> LeaveResult:
         """Leave ``guild`` (``DELETE /users/@me/guilds/{id}``).
 
-        Owned guilds are skipped without any request. HTTP 403 is reported as a skip;
-        exhausted 429 / 5xx retries are reported as errors. HTTP 401 propagates as
+        Owned guilds are skipped without any request. HTTP 403 and 404 are reported as
+        skips; exhausted 429 / 5xx retries are reported as errors. HTTP 401 propagates as
         :class:`TokenRevokedError` so the caller can abort immediately.
         """
         if guild.owner:
@@ -319,5 +318,5 @@ class DiscordClient:
         if status == 403:
             return LeaveResult(guild, LeaveStatus.SKIPPED, t("detail_forbidden", name=guild.name))
         if status == 404:
-            return LeaveResult(guild, LeaveStatus.ERROR, t("detail_404"))
+            return LeaveResult(guild, LeaveStatus.SKIPPED, t("detail_404"))
         return LeaveResult(guild, LeaveStatus.ERROR, t("detail_unexpected", status=status))

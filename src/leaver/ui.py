@@ -13,7 +13,7 @@ import questionary
 from prompt_toolkit.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.data_structures import Point
-from prompt_toolkit.filters import has_focus
+from prompt_toolkit.filters import Condition, has_focus
 from prompt_toolkit.formatted_text import StyleAndTextTuples
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent, merge_key_bindings
 from prompt_toolkit.key_binding.key_processor import KeyPress
@@ -42,6 +42,7 @@ from rich.text import Text
 from . import __version__
 from .api import Guild, LeaveResult, LeaveStatus, User
 from .i18n import count_servers, detect_default_language, servers, set_language, t
+from .security import _read_clipboard
 from .utils import GoBack, console, estimate_seconds, format_duration
 
 # --------------------------------------------------------------------------- #
@@ -636,11 +637,53 @@ def _estimate_text(count: int) -> str:
     return f"~{format_duration(seconds)}"
 
 
+_TEXT_PROMPT_STYLE = questionary.Style(
+    [
+        ("qmark", "fg:ansimagenta bold"),
+        ("question", "bold"),
+        ("answer", "fg:ansigreen"),
+    ]
+)
+
+
+def _prompt_text_with_back(message: str) -> str:
+    """Read text with ``Ctrl+V`` paste and ``Backspace`` (when empty) / ``Esc`` to go back."""
+    if not sys.stdin.isatty():
+        return Prompt.ask(
+            f"[bold bright_magenta]?[/bold bright_magenta] [bold]{message}[/bold]",
+            default="",
+            show_default=False,
+            console=console,
+        ).strip()
+
+    question = questionary.text(message, style=_TEXT_PROMPT_STYLE)
+    extra = KeyBindings()
+    buf_empty = Condition(lambda: len(question.application.current_buffer.text) == 0)
+
+    @extra.add("c-v")
+    def _paste(event: KeyPressEvent) -> None:
+        text = _read_clipboard().strip()
+        if text:
+            event.current_buffer.insert_text(text)
+
+    @extra.add("backspace", filter=buf_empty)
+    @extra.add("escape", eager=True)
+    def _go_back(event: KeyPressEvent) -> None:
+        event.app.exit(exception=GoBack())
+
+    existing = question.application.key_bindings
+    question.application.key_bindings = (
+        merge_key_bindings([extra, existing]) if existing is not None else extra
+    )
+    value: str = question.unsafe_ask()
+    return value.strip()
+
+
 def confirm_leave(selected: list[Guild], clients: list[str]) -> bool:
-    """Show the confirmation panel and require the exact string ``CONFIRM``.
+    """Show the confirmation panel and require typing ``CONFIRM`` or ``ONAYLA``.
 
     Returns:
-        ``True`` only if the user typed ``CONFIRM`` exactly.
+        ``True`` only if the user typed ``CONFIRM`` or ``ONAYLA``.
     """
     table = Table(box=None, show_header=False, padding=(0, 1))
     table.add_column(no_wrap=False)
@@ -672,13 +715,11 @@ def confirm_leave(selected: list[Guild], clients: list[str]) -> bool:
         )
     )
 
-    answer = Prompt.ask(
-        t("confirm_prompt"),
-        default="",
-        show_default=False,
-        console=console,
-    )
-    return answer == "CONFIRM"
+    try:
+        answer = _prompt_text_with_back(t("confirm_prompt"))
+    except GoBack:
+        return False
+    return answer in (t("confirm_keyword"), "CONFIRM", "ONAYLA")
 
 
 # --------------------------------------------------------------------------- #
@@ -812,7 +853,8 @@ def show_summary(results: list[LeaveResult], owned_count: int, elapsed: float) -
     err_style = "bold red" if errors else "dim"
     grid.add_row(Text(t("sum_errors"), style=err_style), Text(str(len(errors)), style=err_style))
     grid.add_row(
-        Text(t("sum_time"), style="cyan"), Text(f"{elapsed:.1f}s", style="bold bright_cyan")
+        Text(t("sum_time"), style="cyan"),
+        Text(format_duration(elapsed), style="bold bright_cyan"),
     )
 
     border = "bright_green" if not errors else "yellow"

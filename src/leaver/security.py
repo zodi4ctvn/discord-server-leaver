@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import contextlib
 import ctypes
 import hashlib
 import hmac
@@ -98,17 +99,31 @@ def secure_wipe(value: str | bytes | bytearray | None) -> None:
         for i in range(len(value)):
             value[i] = 0
         return
+    encoded: bytes | None = None
+    readback: bytes | None = None
     try:
         address = _buffer_address(value)
         if address is None:
             return
-        expected = value.encode("ascii") if isinstance(value, str) else bytes(value)
+        if isinstance(value, str):
+            encoded = value.encode("ascii")
+            expected = encoded
+        else:
+            expected = value
         size = len(expected)
-        if ctypes.string_at(address, size) != expected:
+        readback = ctypes.string_at(address, size)
+        if readback != expected:
             return  # Unexpected layout — refuse to write to unknown memory.
         ctypes.memset(address, 0, size)
     except Exception:  # wiping must never crash the shutdown path
         return
+    finally:
+        for temp in (encoded, readback):
+            if temp is not None:
+                with contextlib.suppress(Exception):
+                    temp_addr = _buffer_address(temp)
+                    if temp_addr is not None:
+                        ctypes.memset(temp_addr, 0, len(temp))
 
 
 # --------------------------------------------------------------------------- #
@@ -172,10 +187,14 @@ def clipboard_has_token(token: str) -> bool:
     """Return ``True`` if the Windows clipboard currently contains ``token``."""
     if sys.platform != "win32" or not token:
         return False
-    clip = _read_clipboard().strip().strip('"').strip("'")
-    matched = hmac.compare_digest(clip, token)
-    secure_wipe(clip)
-    return matched
+    raw_clip = _read_clipboard()
+    clip = raw_clip.strip().strip('"').strip("'")
+    try:
+        return hmac.compare_digest(clip, token)
+    finally:
+        if clip is not raw_clip:
+            secure_wipe(clip)
+        secure_wipe(raw_clip)
 
 
 def clear_clipboard() -> bool:
@@ -211,9 +230,15 @@ def _prompt_masked_token() -> str:
 
     @back_kb.add("c-v")
     def _paste(event: KeyPressEvent) -> None:
-        text = _read_clipboard().strip()
-        if text:
-            event.current_buffer.insert_text(text)
+        raw_clip = _read_clipboard()
+        text = raw_clip.strip()
+        try:
+            if text:
+                event.current_buffer.insert_text(text)
+        finally:
+            if text is not raw_clip:
+                secure_wipe(text)
+            secure_wipe(raw_clip)
 
     @back_kb.add("backspace", filter=buf_empty)
     @back_kb.add("escape", eager=True)
